@@ -3,12 +3,10 @@ from prettytable import PrettyTable
 def sortFunc(lst_process, lst_names):
     copy_names = lst_names[:]
     copy_lst = lst_process[:]
-    new_lst = [[0, 0]]   #Initializing CPU
+    new_lst = [[0, 0, 0]]   #Initializing CPU
     minVal = min(copy_lst, key = lambda x : x[0])   # To Find Out if the Processes Arrive at 0 or not
     remVal = minVal[0]
     currentTime = remVal
-    
-    tempFunc = lambda x : x[1]
 
     ready_que = []
 
@@ -19,16 +17,16 @@ def sortFunc(lst_process, lst_names):
         #print(currentTime)
 
         for val, name in zip(copy_lst, copy_names):
-            at, bt = val
+            at, bt, pt = val
             if at <= currentTime:
-                temp.append([at, bt])
+                temp.append([at, bt, pt])
                 temp_names.append(name)
         #print(temp)
 
-        minVal = min(temp, key = tempFunc)
+        minVal = min(temp, key = lambda x: x[2])
         minVal_index = copy_lst.index(minVal)
         if minVal[1] != 0:
-            new_lst += [[minVal[0], minVal[1]-1]]
+            new_lst += [[minVal[0], minVal[1]-1], minVal[2]]
             ready_que.append(copy_names[minVal_index])
             copy_lst[minVal_index][1] -= 1
             currentTime += 1
@@ -41,20 +39,22 @@ def sortFunc(lst_process, lst_names):
     return new_lst, ready_que
 
 num = int(input("Please Enter Number of Processes: "))
-num = 5
 # process_lst = [[2, 6], [5, 2], [1, 8], [0, 3], [4, 4]]
 arrival_time_lst = []
 burst_time_lst = []
+priority_lst = []
 process_names = []
 
 for i in range(num):
     arrival_time = int(input(f"Please Input Arrival time for P{i+1}: "))
     burst_time = int(input(f"Please Input Burst Time for P{i+1}: "))
+    priority = int(input(f"Please Input Priority Of P{i+1}: "))
     process_names.append(f"P{i+1}")
     arrival_time_lst.append(arrival_time)
     burst_time_lst.append(burst_time)
+    priority_lst.append(priority)
 
-process_lst = list(zip(arrival_time_lst, burst_time_lst))
+process_lst = list(zip(arrival_time_lst, burst_time_lst, priority_lst))
 temp_process_lst = [list(i) for i in process_lst]
 
 sorted_process_lst, new_process_names = sortFunc(temp_process_lst, process_names)
